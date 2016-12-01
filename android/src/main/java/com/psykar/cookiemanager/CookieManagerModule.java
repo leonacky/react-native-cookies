@@ -1,5 +1,6 @@
 package com.psykar.cookiemanager;
 
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -37,8 +38,19 @@ public class CookieManagerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setFromResponse(String url, String value, final Callback callback) throws URISyntaxException, IOException {
+    public void setFromResponse(String url, ReadableMap map, final Callback callback) throws URISyntaxException, IOException {
         Map headers = new HashMap<String, List<String>>();
+        String value = "";
+        ReadableMapKeySetIterator iterator = map.keySetIterator();
+        while(iterator.hasNextKey()) {
+            String _key = iterator.nextKey();
+            String _value = map.getString(_key);
+            if(iterator.hasNextKey()) {
+                value += _key+"="+_value+"; ";
+            } else {
+                value += _key+"="+_value;
+            }
+        }
         // Pretend this is a header
         headers.put("Set-cookie", Collections.singletonList(value));
         URI uri = new URI(url);
