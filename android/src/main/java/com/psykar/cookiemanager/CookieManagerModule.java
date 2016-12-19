@@ -1,5 +1,8 @@
 package com.psykar.cookiemanager;
 
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -34,7 +37,13 @@ public class CookieManagerModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void set(ReadableMap cookie, final Callback callback) throws Exception {
-        throw new Exception("Cannot call on android, try setFromResponse");
+        CookieSyncManager.createInstance(getReactApplicationContext());
+        CookieManager localCookieManager = CookieManager.getInstance();
+        localCookieManager.setAcceptCookie(true);
+        localCookieManager.setCookie(cookie.getString("domain"), String.format("%s=%s", cookie.getString("name"), cookie.getString("value")));
+        localCookieManager.setCookie(cookie.getString("name"), cookie.getString("value"));
+        CookieSyncManager.getInstance().sync();
+        callback.invoke(null, null);
     }
 
     @ReactMethod
@@ -85,6 +94,12 @@ public class CookieManagerModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void clearAll(final Callback callback) {
+        CookieSyncManager.createInstance(getReactApplicationContext());
+        CookieManager localCookieManager = CookieManager.getInstance();
+        localCookieManager.setAcceptCookie(true);
+        localCookieManager.removeAllCookie();
+        CookieSyncManager.getInstance().sync();
+        callback.invoke(null, null);
         this.cookieHandler.clearCookies(new Callback() {
             public void invoke(Object... args) {
                 callback.invoke(null, null);

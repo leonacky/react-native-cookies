@@ -15,13 +15,13 @@ RCT_EXPORT_METHOD(set:(NSDictionary *)props callback:(RCTResponseSenderBlock)cal
     NSDate *expiration = [RCTConvert NSDate:props[@"expiration"]];
 
     NSMutableDictionary *cookieProperties = [NSMutableDictionary dictionary];
-    [cookieProperties setObject:name forKey:NSHTTPCookieName];
-    [cookieProperties setObject:value forKey:NSHTTPCookieValue];
-    [cookieProperties setObject:domain forKey:NSHTTPCookieDomain];
-    [cookieProperties setObject:origin forKey:NSHTTPCookieOriginURL];
-    [cookieProperties setObject:path forKey:NSHTTPCookiePath];
-    [cookieProperties setObject:version forKey:NSHTTPCookieVersion];
-    [cookieProperties setObject:expiration forKey:NSHTTPCookieExpires];
+    if (name!=nil) [cookieProperties setObject:name forKey:NSHTTPCookieName];
+    if (value!=nil) [cookieProperties setObject:value forKey:NSHTTPCookieValue];
+    if (domain!=nil) [cookieProperties setObject:domain forKey:NSHTTPCookieDomain];
+    if (origin!=nil) [cookieProperties setObject:origin forKey:NSHTTPCookieOriginURL];
+    if (path!=nil) [cookieProperties setObject:path forKey:NSHTTPCookiePath];
+    if (version!=nil) [cookieProperties setObject:version forKey:NSHTTPCookieVersion];
+    if (expiration!=nil) [cookieProperties setObject:expiration forKey:NSHTTPCookieExpires];
 
     NSLog(@"SETTING COOKIE");
     NSLog(@"%@", cookieProperties);
@@ -34,7 +34,11 @@ RCT_EXPORT_METHOD(set:(NSDictionary *)props callback:(RCTResponseSenderBlock)cal
 
 RCT_EXPORT_METHOD(setFromResponse:(NSURL *)url value:(NSDictionary *)value callback:(RCTResponseSenderBlock)callback) {
   NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:value forURL:url];
-  [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookies:cookies forURL:url mainDocumentURL:NULL];
+//  [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookies:cookies forURL:url mainDocumentURL:NULL];
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in cookies) {
+        [storage setCookie:cookie];
+    }
     callback(@[[NSNull null]]);
 }
 
