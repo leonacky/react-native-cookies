@@ -99,7 +99,6 @@ public class CookieManagerModule extends ReactContextBaseJavaModule {
         localCookieManager.setAcceptCookie(true);
         localCookieManager.removeAllCookie();
         CookieSyncManager.getInstance().sync();
-        callback.invoke(null, null);
         this.cookieHandler.clearCookies(new Callback() {
             public void invoke(Object... args) {
                 callback.invoke(null, null);
